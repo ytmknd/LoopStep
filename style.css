@@ -159,8 +159,40 @@ kbd { font: 700 0.7rem var(--font-mono); padding: 0.1rem 0.4rem; border: 1px sol
 .shortcuts { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: 0; color: var(--color-dim); font-size: 0.8rem; }
 
 @media (max-width: 480px) {
-  .btn-toggle { flex: 1 1 8rem; }
   kbd { display: none; }
+}
+
+/* スマホ縦長: 動画とタイムラインを上部に固定し、スクロールして設定を触っても映像が見えるようにする。
+   再生ボタンは親指が届く位置で大きく、トグルは2列に並べる */
+@media (max-width: 899px) and (orientation: portrait) {
+  body { padding-top: max(var(--space-2), env(safe-area-inset-top)); padding-bottom: max(var(--space-5), env(safe-area-inset-bottom)); }
+  .site-header { margin-bottom: var(--space-2); }
+  .tagline { display: none; }
+  .stage-layout { gap: var(--space-3); }
+  .stage { display: contents; }
+  body { height: 100dvh; min-height: 0; overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+  .site-header { flex: none; }
+  .stage-layout { flex: 1 1 0; min-height: 0; width: 100%; align-content: start; overflow-y: auto; overscroll-behavior: contain; padding-bottom: max(var(--space-5), env(safe-area-inset-bottom)); }
+  .viewer {
+    position: sticky; top: 0; z-index: 10; padding-top: var(--space-1);
+    background: var(--color-bg); box-shadow: 0 10px 16px -10px #000;
+  }
+  .dropzone { aspect-ratio: auto; height: 46dvh; width: 100%; border-radius: var(--radius-sm); }
+  .filename { margin: var(--space-1) 0 var(--space-2); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .timeline { margin-bottom: var(--space-2); }
+  .time-row { margin-top: var(--space-1); font-size: 0.85rem; }
+  .transport { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
+  .btn-play { grid-column: 1 / -1; min-height: 3.5rem; }
+  .transport .btn { padding: 0 var(--space-2); }
+  .panel { gap: var(--space-3); }
+  .group { padding: var(--space-3); }
+  .range-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+  .nudge { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nudge .time-input { grid-column: 1 / -1; grid-row: 1; }
+  .time-field .btn-accent-a, .time-field .btn-accent-b { font-size: 0.8rem; line-height: 1.25; padding: var(--space-2); text-align: center; white-space: normal; overflow-wrap: anywhere; }
+  .message { margin-top: var(--space-2); min-height: 0; }
+  .message:empty { display: none; }
+  .shortcuts { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

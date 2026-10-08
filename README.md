@@ -2,6 +2,8 @@
 
 A local-first web app for dance practice: loop any section of a video, slow it down, mirror it, and get a count-in. Nothing leaves your device.
 
+**Live demo: https://ytmknd.github.io/LoopStep/**
+
 ## Features
 
 - **Section loop** — set start/stop points from the current playhead or type them in, with ±0.1 s nudging
@@ -17,7 +19,7 @@ A local-first web app for dance practice: loop any section of a video, slow it d
 
 LoopStep is a static site with no build step and no dependencies.
 
-1. Open `index.html` in a modern browser (or serve the folder with any static server, e.g. `npx serve .`).
+1. Open the [live demo](https://ytmknd.github.io/LoopStep/), or open `index.html` in a modern browser (or serve the folder with any static server, e.g. `npx serve .`).
 2. Drop a video onto the page, or choose a file.
 3. Set the loop start (`A`) and stop (`B`) points, pick a speed, and practice.
 

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>LoopStep | 踊り練習ループ再生</title>
-  <meta name="description" content="動画の区間を繰り返し再生して踊りを練習するローカル完結アプリ">
+  <title data-i18n="meta.title">LoopStep | Loop playback for dance practice</title>
+  <meta name="description" content="A local-first app for practicing dance by looping a section of a video.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@500;800&display=swap" rel="stylesheet">
@@ -13,21 +13,21 @@
 <body>
   <header class="site-header">
     <h1 class="logo">Loop<span class="logo-accent">/</span>Step</h1>
-    <p class="tagline">区間リピートで、体に入れる。</p>
+    <p class="tagline" data-i18n="tagline">Repeat a section until it sticks.</p>
   </header>
 
   <main class="stage-layout">
-    <section class="stage" aria-label="動画プレーヤー">
+    <section class="stage" data-i18n-aria-label="player.label" aria-label="Video player">
       <div id="dropzone" class="dropzone" tabindex="-1">
-        <video id="video" playsinline preload="auto" aria-label="練習用動画"></video>
+        <video id="video" playsinline preload="auto" data-i18n-aria-label="video.label" aria-label="Practice video"></video>
         <div id="empty" class="empty">
-          <p class="empty-title">動画をここにドロップ</p>
-          <p class="empty-sub">または</p>
+          <p class="empty-title" data-i18n="drop.title">Drop a video here</p>
+          <p class="empty-sub" data-i18n="drop.or">or</p>
           <label class="btn btn-primary file-btn">
             <input id="file" type="file" accept="video/*" class="visually-hidden">
-            <span>動画ファイルを選ぶ</span>
+            <span data-i18n="drop.choose">Choose a video file</span>
           </label>
-          <p class="empty-note">ファイルは端末内だけで再生され、送信されません。</p>
+          <p class="empty-note" data-i18n="drop.note">Files are played on your device only and never uploaded.</p>
         </div>
         <div id="countin" class="countin" aria-live="assertive" aria-atomic="true"></div>
       </div>
@@ -38,7 +38,7 @@
           <div id="region" class="region"></div>
           <div id="playhead" class="playhead"></div>
         </div>
-        <input id="seek" class="seek" type="range" min="0" max="1" step="0.01" value="0" aria-label="再生位置" disabled>
+        <input id="seek" class="seek" type="range" min="0" max="1" step="0.01" value="0" data-i18n-aria-label="seek.label" aria-label="Playback position" disabled>
         <div class="time-row">
           <span id="current" class="mono">00:00.0</span>
           <span id="duration" class="mono dim">00:00.0</span>
@@ -47,64 +47,68 @@
 
       <div class="transport">
         <button id="play" class="btn btn-primary btn-play" type="button" disabled aria-keyshortcuts="Space">
-          <span id="play-label">再生</span><kbd>Space</kbd>
+          <span id="play-label" data-i18n="play.play">Play</span><kbd>Space</kbd>
+        </button>
+        <button id="restart" class="btn" type="button" disabled aria-keyshortcuts="R">
+          <span data-i18n="restart.label">From start</span><kbd>R</kbd>
         </button>
         <button id="loop" class="btn btn-toggle" type="button" aria-pressed="true" disabled aria-keyshortcuts="L">
-          ループ <span class="state" id="loop-state">ON</span><kbd>L</kbd>
+          <span data-i18n="loop.label">Loop</span> <span class="state" id="loop-state">ON</span><kbd>L</kbd>
         </button>
         <button id="mirror" class="btn btn-toggle" type="button" aria-pressed="false" disabled aria-keyshortcuts="M">
-          ミラー <span class="state" id="mirror-state">OFF</span><kbd>M</kbd>
+          <span data-i18n="mirror.label">Mirror</span> <span class="state" id="mirror-state">OFF</span><kbd>M</kbd>
         </button>
       </div>
     </section>
 
-    <section class="panel" aria-label="設定">
+    <section class="panel" data-i18n-aria-label="settings.label" aria-label="Settings">
       <fieldset class="group" id="range-group" disabled>
-        <legend>ループ区間</legend>
+        <legend data-i18n="range.legend">Loop range</legend>
         <div class="range-grid">
           <div class="time-field" data-kind="start">
-            <label for="start-input">スタート</label>
+            <label for="start-input" data-i18n="range.start">Start</label>
             <div class="nudge">
-              <button type="button" class="btn btn-small" data-nudge="start" data-dir="-1" aria-label="スタートを0.1秒戻す">−0.1</button>
+              <button type="button" class="btn btn-small" data-nudge="start" data-dir="-1" data-i18n-aria-label="range.startBack" aria-label="Move start back 0.1 s">−0.1</button>
               <input id="start-input" class="time-input mono" type="text" inputmode="decimal" autocomplete="off" value="00:00.0">
-              <button type="button" class="btn btn-small" data-nudge="start" data-dir="1" aria-label="スタートを0.1秒進める">+0.1</button>
+              <button type="button" class="btn btn-small" data-nudge="start" data-dir="1" data-i18n-aria-label="range.startForward" aria-label="Move start forward 0.1 s">+0.1</button>
             </div>
-            <button id="set-start" type="button" class="btn btn-accent-a" aria-keyshortcuts="A">現在位置をスタートに<kbd>A</kbd></button>
+            <button id="set-start" type="button" class="btn btn-accent-a" aria-keyshortcuts="A"><span data-i18n="range.setStart">Set start to current position</span><kbd>A</kbd></button>
           </div>
           <div class="time-field" data-kind="stop">
-            <label for="stop-input">ストップ</label>
+            <label for="stop-input" data-i18n="range.stop">Stop</label>
             <div class="nudge">
-              <button type="button" class="btn btn-small" data-nudge="stop" data-dir="-1" aria-label="ストップを0.1秒戻す">−0.1</button>
+              <button type="button" class="btn btn-small" data-nudge="stop" data-dir="-1" data-i18n-aria-label="range.stopBack" aria-label="Move stop back 0.1 s">−0.1</button>
               <input id="stop-input" class="time-input mono" type="text" inputmode="decimal" autocomplete="off" value="00:00.0">
-              <button type="button" class="btn btn-small" data-nudge="stop" data-dir="1" aria-label="ストップを0.1秒進める">+0.1</button>
+              <button type="button" class="btn btn-small" data-nudge="stop" data-dir="1" data-i18n-aria-label="range.stopForward" aria-label="Move stop forward 0.1 s">+0.1</button>
             </div>
-            <button id="set-stop" type="button" class="btn btn-accent-b" aria-keyshortcuts="B">現在位置をストップに<kbd>B</kbd></button>
+            <button id="set-stop" type="button" class="btn btn-accent-b" aria-keyshortcuts="B"><span data-i18n="range.setStop">Set stop to current position</span><kbd>B</kbd></button>
           </div>
         </div>
         <p id="message" class="message" role="alert"></p>
       </fieldset>
 
       <fieldset class="group" id="speed-group" disabled>
-        <legend>再生速度 <span id="speed-readout" class="mono">1x</span> <span class="hint">↑ ↓</span></legend>
-        <div class="speed-buttons" id="speed-buttons" role="group" aria-label="再生速度"></div>
+        <legend><span data-i18n="speed.legend">Speed</span> <span id="speed-readout" class="mono">1x</span> <span class="hint">↑ ↓</span></legend>
+        <div class="speed-buttons" id="speed-buttons" role="group" data-i18n-aria-label="speed.group" aria-label="Playback speed"></div>
       </fieldset>
 
       <fieldset class="group" id="countin-group" disabled>
-        <legend>カウントイン</legend>
-        <div class="seg" role="radiogroup" aria-label="カウントイン秒数">
-          <label class="seg-item"><input type="radio" name="countin" value="0" checked><span>なし</span></label>
-          <label class="seg-item"><input type="radio" name="countin" value="3"><span>3秒</span></label>
-          <label class="seg-item"><input type="radio" name="countin" value="5"><span>5秒</span></label>
+        <legend data-i18n="countin.legend">Count-in</legend>
+        <div class="seg" role="radiogroup" data-i18n-aria-label="countin.group" aria-label="Count-in seconds">
+          <label class="seg-item"><input type="radio" name="countin" value="0" checked><span data-i18n="countin.none">None</span></label>
+          <label class="seg-item"><input type="radio" name="countin" value="3"><span data-i18n="countin.3">3 s</span></label>
+          <label class="seg-item"><input type="radio" name="countin" value="5"><span data-i18n="countin.5">5 s</span></label>
         </div>
       </fieldset>
 
       <p class="shortcuts">
-        <span><kbd>←</kbd><kbd>→</kbd> 0.5秒シーク</span>
-        <span><kbd>Shift</kbd>+<kbd>←</kbd><kbd>→</kbd> 0.1秒</span>
+        <span><kbd>←</kbd><kbd>→</kbd> <span data-i18n="shortcuts.seek">0.5 s seek</span></span>
+        <span><kbd>Shift</kbd>+<kbd>←</kbd><kbd>→</kbd> <span data-i18n="shortcuts.seekFine">0.1 s</span></span>
       </p>
     </section>
   </main>
   <script src="lib.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

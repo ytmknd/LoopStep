@@ -1,6 +1,9 @@
 (function () {
   'use strict';
   const L = window.MVLib;
+  const I = window.MVI18n;
+  const locale = I.detectLocale(navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]);
+  const t = (key, params) => I.translate(locale, key, params);
 
   const SEEK_COARSE = 0.5;
   const SEEK_FINE = 0.1;
@@ -10,7 +13,7 @@
   const $ = (id) => document.getElementById(id);
   const el = {
     video: $('video'), dropzone: $('dropzone'), file: $('file'), filename: $('filename'),
-    play: $('play'), playLabel: $('play-label'), loop: $('loop'), loopState: $('loop-state'),
+    play: $('play'), restart: $('restart'), playLabel: $('play-label'), loop: $('loop'), loopState: $('loop-state'),
     mirror: $('mirror'), mirrorState: $('mirror-state'), seek: $('seek'),
     current: $('current'), duration: $('duration'), region: $('region'), playhead: $('playhead'),
     startInput: $('start-input'), stopInput: $('stop-input'), message: $('message'),
@@ -25,6 +28,20 @@
   const update = (patch) => { state = { ...state, ...patch }; };
   const duration = () => (Number.isFinite(el.video.duration) ? el.video.duration : 0);
   const isLoaded = () => duration() > 0;
+
+  // ---- 国際化 ----
+  function applyTranslations() {
+    document.documentElement.lang = locale;
+    document.title = t('meta.title');
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', t('meta.description'));
+    for (const node of document.querySelectorAll('[data-i18n]')) {
+      node.textContent = t(node.dataset.i18n);
+    }
+    for (const node of document.querySelectorAll('[data-i18n-aria-label]')) {
+      node.setAttribute('aria-label', t(node.dataset.i18nAriaLabel));
+    }
+  }
 
   // ---- 表示 ----
   function showMessage(text) {
@@ -57,9 +74,9 @@
 
   function renderToggles() {
     el.loop.setAttribute('aria-pressed', String(state.loop));
-    el.loopState.textContent = state.loop ? 'ON' : 'OFF';
+    el.loopState.textContent = t(state.loop ? 'toggle.on' : 'toggle.off');
     el.mirror.setAttribute('aria-pressed', String(state.mirror));
-    el.mirrorState.textContent = state.mirror ? 'ON' : 'OFF';
+    el.mirrorState.textContent = t(state.mirror ? 'toggle.on' : 'toggle.off');
     el.video.classList.toggle('is-mirrored', state.mirror);
     el.speedReadout.textContent = `${state.speed}x`;
     for (const b of el.speedButtons.children) {
@@ -68,7 +85,7 @@
   }
 
   function renderPlayState() {
-    el.playLabel.textContent = el.video.paused ? '再生' : '停止';
+    el.playLabel.textContent = t(el.video.paused ? 'play.play' : 'play.pause');
   }
 
   // ---- 永続化 ----
@@ -89,7 +106,7 @@
 
   // ---- 操作 ----
   function applyRangeResult(result) {
-    if (!result.ok) { showMessage(result.error); renderInputs(); return false; }
+    if (!result.ok) { showMessage(t(`err.${result.error}`)); renderInputs(); return false; }
     showMessage('');
     update({ range: result.range });
     renderInputs();
@@ -143,16 +160,24 @@
     return true;
   }
 
-  async function startFromRangeStart() {
+  async function startFrom(time) {
     el.video.pause();
-    seekTo(state.range.start);
+    seekTo(time);
     if (state.countIn > 0 && !(await runCountIn(state.countIn))) return;
     await safePlay();
   }
 
+  const startFromRangeStart = () => startFrom(state.range.start);
+
+  function playFromStart() {
+    if (!isLoaded()) return;
+    cancelCountIn();
+    startFrom(0);
+  }
+
   async function safePlay() {
     try { await el.video.play(); } catch (err) {
-      if (err && err.name !== 'AbortError') showMessage(`再生できませんでした: ${err.message}`);
+      if (err && err.name !== 'AbortError') showMessage(t('err.playFailed', { message: err.message }));
     }
   }
 
@@ -179,14 +204,14 @@
   // ---- ファイル読み込み ----
   function enableControls(enabled) {
     for (const g of el.groups) g.disabled = !enabled;
-    for (const b of [el.play, el.loop, el.mirror]) b.disabled = !enabled;
+    for (const b of [el.play, el.restart, el.loop, el.mirror]) b.disabled = !enabled;
     el.seek.disabled = !enabled;
   }
 
   function loadFile(file) {
     if (!file) return;
     if (!file.type.startsWith('video/') && !/\.(mp4|mov|m4v|webm|ogv|mkv)$/i.test(file.name)) {
-      showMessage('動画ファイルを選択してください。');
+      showMessage(t('err.notVideo'));
       return;
     }
     cancelCountIn();
@@ -219,13 +244,13 @@
     if (!el.video.src) return;
     enableControls(false);
     el.video.classList.remove('is-loaded');
-    showMessage('この動画は読み込めませんでした。別の形式（MP4など）をお試しください。');
+    showMessage(t('err.loadFailed'));
   }
 
   // ---- イベント配線 ----
   function commitInput(input, setter) {
     const t = L.parseTime(input.value);
-    if (t === null) { showMessage('mm:ss.s の形式で入力してください（例 01:05.5）。'); return; }
+    if (t === null) { showMessage(t('err.timeFormat')); return; }
     setter(t);
   }
 
@@ -266,6 +291,7 @@
     ' ': togglePlay,
     a: () => setStartAt(el.video.currentTime),
     b: () => setStopAt(el.video.currentTime),
+    r: playFromStart,
     l: () => setLoop(!state.loop),
     m: () => setMirror(!state.mirror),
     ArrowLeft: (e) => seekBy(-(e.shiftKey ? SEEK_FINE : SEEK_COARSE)),
@@ -294,6 +320,7 @@
     el.video.addEventListener('click', togglePlay);
     el.seek.addEventListener('input', () => seekTo(Number(el.seek.value)));
     el.play.addEventListener('click', togglePlay);
+    el.restart.addEventListener('click', playFromStart);
     el.loop.addEventListener('click', () => setLoop(!state.loop));
     el.mirror.addEventListener('click', () => setMirror(!state.mirror));
     $('set-start').addEventListener('click', () => setStartAt(el.video.currentTime));
@@ -310,8 +337,10 @@
     bindDrop();
   }
 
+  applyTranslations();
   buildSpeedButtons();
   bind();
+  renderPlayState();
   renderToggles();
   requestAnimationFrame(onFrame);
 })();

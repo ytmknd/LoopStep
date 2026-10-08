@@ -34,26 +34,27 @@
     return { start: 0, stop: round1(Math.max(duration, 0)) };
   }
 
+  /** error は i18n のメッセージキー (err.*) の接尾辞コード */
   function fail(range, error) {
     return { ok: false, range, error };
   }
 
   function setStart(range, value, duration) {
-    if (!Number.isFinite(value)) return fail(range, '時刻を数値で入力してください。');
+    if (!Number.isFinite(value)) return fail(range, 'notNumber');
     const v = round1(value);
-    if (v < 0 || v > duration) return fail(range, '動画の長さの範囲内で指定してください。');
+    if (v < 0 || v > duration) return fail(range, 'outOfRange');
     if (v > range.stop - MIN_GAP + 1e-9) {
-      return fail(range, 'スタートはストップより前にしてください。');
+      return fail(range, 'startAfterStop');
     }
     return { ok: true, range: { ...range, start: v }, error: null };
   }
 
   function setStop(range, value, duration) {
-    if (!Number.isFinite(value)) return fail(range, '時刻を数値で入力してください。');
+    if (!Number.isFinite(value)) return fail(range, 'notNumber');
     const v = round1(value);
-    if (v < 0 || v > round1(duration)) return fail(range, '動画の長さの範囲内で指定してください。');
+    if (v < 0 || v > round1(duration)) return fail(range, 'outOfRange');
     if (v < range.start + MIN_GAP - 1e-9) {
-      return fail(range, 'ストップはスタートより後にしてください。');
+      return fail(range, 'stopBeforeStart');
     }
     return { ok: true, range: { ...range, stop: v }, error: null };
   }

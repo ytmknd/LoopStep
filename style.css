@@ -47,7 +47,7 @@ body {
 .tagline { margin: 0; color: var(--color-dim); font-size: 0.9rem; }
 
 .stage-layout { display: grid; gap: var(--space-5); max-width: 120rem; margin: 0 auto; grid-template-columns: minmax(0, 1fr); }
-@media (min-width: 900px) and (min-aspect-ratio: 1/1) { .stage-layout { grid-template-columns: minmax(0, 1fr) clamp(17rem, 22vw, 23rem); align-items: start; } }
+@media (min-width: 900px) and (min-aspect-ratio: 1/1), (min-width: 900px) and (pointer: fine) { .stage-layout { grid-template-columns: minmax(0, 1fr) clamp(17rem, 22vw, 23rem); align-items: start; } }
 
 .dropzone {
   position: relative; aspect-ratio: 16 / 9; background: var(--color-bg-deep);
@@ -164,7 +164,7 @@ kbd { font: 700 0.7rem var(--font-mono); padding: 0.1rem 0.4rem; border: 1px sol
 
 /* スマホ縦長: 動画とタイムラインを上部に固定し、スクロールして設定を触っても映像が見えるようにする。
    再生ボタンは親指が届く位置で大きく、トグルは2列に並べる */
-@media (max-aspect-ratio: 1/1) {
+@media (max-width: 899px) and (max-aspect-ratio: 1/1), (pointer: coarse) and (max-aspect-ratio: 1/1) {
   body { padding-top: max(var(--space-2), env(safe-area-inset-top)); padding-bottom: max(var(--space-5), env(safe-area-inset-bottom)); }
   .site-header { margin-bottom: var(--space-2); }
   .tagline { display: none; }
@@ -200,7 +200,7 @@ kbd { font: 700 0.7rem var(--font-mono); padding: 0.1rem 0.4rem; border: 1px sol
 
 /* デスクトップ: 1画面に収める。幅は画面いっぱい使い、動画は残り高さいっぱい。
    低い画面（Chromebook 等）では操作部の高さ・余白を表示領域の高さに比例して詰め、設定パネルのスクロールを避ける */
-@media (min-width: 900px) and (min-aspect-ratio: 1/1) {
+@media (min-width: 900px) and (min-aspect-ratio: 1/1), (min-width: 900px) and (pointer: fine) {
   :root {
     --tap: clamp(1.9rem, 5.4vh, 2.75rem);
     --pad: clamp(0.3rem, 1.2vh, 0.75rem);
@@ -211,6 +211,7 @@ kbd { font: 700 0.7rem var(--font-mono); padding: 0.1rem 0.4rem; border: 1px sol
   .tagline { font-size: 0.8rem; }
   .stage-layout { flex: 1 1 0; min-height: 0; width: 100%; max-width: none; align-items: stretch; gap: var(--space-3); }
   .stage { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .viewer { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
   .dropzone { flex: 1 1 0; min-height: 0; aspect-ratio: auto; }
   .filename { flex: none; margin: var(--space-1) 0; min-height: 0; font-size: 0.8rem; }
   .timeline { flex: none; margin-bottom: var(--pad); }
@@ -224,7 +225,7 @@ kbd { font: 700 0.7rem var(--font-mono); padding: 0.1rem 0.4rem; border: 1px sol
   .time-input { font-size: 1.05rem; }
   .message { margin-top: var(--space-1); min-height: 1.2em; }
 }
-@media (min-width: 900px) and (min-aspect-ratio: 1/1) and (max-height: 700px) {
+@media (min-width: 900px) and (max-height: 700px) and (min-aspect-ratio: 1/1), (min-width: 900px) and (max-height: 700px) and (pointer: fine) {
   .shortcuts { display: none; }
   .group legend { font-size: 0.7rem; }
 }
